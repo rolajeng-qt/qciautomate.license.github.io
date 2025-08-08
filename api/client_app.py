@@ -3,13 +3,9 @@ import json
 import os
 import sys
 
-# 从你的 license_generator_web.py 导入获取硬件ID的函数
-# 注意：你需要将 license_generator_web.py 放在 client_app.py 同一目录下
 from license_generator_web import LicenseGeneratorLogic
 
-# 这是你部署在 Vercel 上的后端的完整URL
-# 请替换成你自己的 Vercel 项目网址
-VERCEL_API_URL = "https://qciautomate-license-github-io.vercel.app/"
+VERCEL_API_URL = "https://qciautomate-license-github-io.vercel.app/api/generate-for-app" 
 
 def main():
     try:
