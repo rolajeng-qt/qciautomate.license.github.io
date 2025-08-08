@@ -529,7 +529,34 @@ license_logic = LicenseGeneratorLogic()
 # def home():
 #     """首页，显示硬件ID输入表单"""
 #     return get_html_template()
+@app.route('/api/generate-for-app', methods=['POST'])
+def generate_for_app():
+    """接收硬件ID，生成许可证文件并返回"""
+    try:
+        data = request.get_json()
+        hardware_id = data.get('hardware_id')
+        customer_name = data.get('customer_name', 'Client App User')
+        expiry_days = data.get('expiry_days', 365)
+        
+        if not hardware_id:
+            return jsonify({"error": "缺少硬件ID"}), 400
 
+        if expiry_days < 1 or expiry_days > 3650:
+            return jsonify({"error": "许可证有效期必须介于 1-3650 天之间"}), 400
+
+        print(f"为本機应用程式生成许可证 - 用户: {customer_name}, 硬件ID: {hardware_id[:8]}..., 天数: {expiry_days}")
+        
+        license_content = license_logic.generate_license_content(customer_name, hardware_id, expiry_days)
+        if not license_content:
+            return jsonify({"error": "生成许可证内容失败"}), 500
+
+        # 直接返回许可证文件内容，无需send_file
+        return license_content, 200, {'Content-Type': 'application/octet-stream', 'Content-Disposition': 'attachment; filename=license.lic'}
+
+    except Exception as e:
+        print(f"API错误 - generate_for_app: {e}")
+        return jsonify({"error": f"生成许可证文件失败: {str(e)}"}), 500
+    
 @app.route('/api/get-hardware-id', methods=['GET'])
 def get_hardware_id():
     """API: 获取本机硬件ID（增强版 - 正确识别 Windows 11）"""
