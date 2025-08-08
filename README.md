@@ -1,0 +1,2 @@
+# QCIAutomateLicenseGenerator
+QCIAutomate License Generator
