@@ -9,526 +9,526 @@ app = Flask(__name__)
 license_logic = LicenseGeneratorLogic()
 
 # 读取 HTML 模板文件
-def get_html_template():
-    """读取 HTML 模板文件，如果不存在则返回默认模板"""
-    try:
-        with open('index.html', 'r', encoding='utf-8') as f:
-            return f.read()
-    except FileNotFoundError:
-        # 如果没有 index.html，使用专业的现代化模板
-        return """
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QCIAutomate 许可证生成器</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+# def get_html_template():
+#     """读取 HTML 模板文件，如果不存在则返回默认模板"""
+#     try:
+#         with open('index.html', 'r', encoding='utf-8') as f:
+#             return f.read()
+#     except FileNotFoundError:
+#         # 如果没有 index.html，使用专业的现代化模板
+#         return """
+# <!DOCTYPE html>
+# <html lang="zh-CN">
+# <head>
+#     <meta charset="UTF-8">
+#     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+#     <title>QCIAutomate 许可证生成器</title>
+#     <style>
+#         * {
+#             margin: 0;
+#             padding: 0;
+#             box-sizing: border-box;
+#         }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
+#         body {
+#             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+#             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+#             min-height: 100vh;
+#             display: flex;
+#             align-items: center;
+#             justify-content: center;
+#             padding: 20px;
+#         }
 
-        .container {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            padding: 40px;
-            width: 100%;
-            max-width: 800px;
-            animation: slideIn 0.6s ease-out;
-        }
+#         .container {
+#             background: rgba(255, 255, 255, 0.95);
+#             backdrop-filter: blur(10px);
+#             border-radius: 20px;
+#             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+#             padding: 40px;
+#             width: 100%;
+#             max-width: 800px;
+#             animation: slideIn 0.6s ease-out;
+#         }
 
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+#         @keyframes slideIn {
+#             from {
+#                 opacity: 0;
+#                 transform: translateY(30px);
+#             }
+#             to {
+#                 opacity: 1;
+#                 transform: translateY(0);
+#             }
+#         }
 
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
+#         .header {
+#             text-align: center;
+#             margin-bottom: 40px;
+#         }
 
-        .header h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 10px;
-        }
+#         .header h1 {
+#             font-size: 2.5rem;
+#             font-weight: 700;
+#             background: linear-gradient(135deg, #667eea, #764ba2);
+#             -webkit-background-clip: text;
+#             -webkit-text-fill-color: transparent;
+#             background-clip: text;
+#             margin-bottom: 10px;
+#         }
 
-        .header p {
-            color: #666;
-            font-size: 1.1rem;
-        }
+#         .header p {
+#             color: #666;
+#             font-size: 1.1rem;
+#         }
 
-        .section {
-            background: white;
-            border-radius: 15px;
-            padding: 30px;
-            margin-bottom: 30px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
+#         .section {
+#             background: white;
+#             border-radius: 15px;
+#             padding: 30px;
+#             margin-bottom: 30px;
+#             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+#             transition: transform 0.3s ease, box-shadow 0.3s ease;
+#         }
 
-        .section:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
-        }
+#         .section:hover {
+#             transform: translateY(-2px);
+#             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+#         }
 
-        .section-title {
-            font-size: 1.4rem;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+#         .section-title {
+#             font-size: 1.4rem;
+#             font-weight: 600;
+#             color: #333;
+#             margin-bottom: 20px;
+#             display: flex;
+#             align-items: center;
+#             gap: 10px;
+#         }
 
-        .section-icon {
-            width: 24px;
-            height: 24px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-        }
+#         .section-icon {
+#             width: 24px;
+#             height: 24px;
+#             background: linear-gradient(135deg, #667eea, #764ba2);
+#             border-radius: 6px;
+#             display: flex;
+#             align-items: center;
+#             justify-content: center;
+#             color: white;
+#             font-weight: bold;
+#         }
 
-        .form-group {
-            margin-bottom: 20px;
-        }
+#         .form-group {
+#             margin-bottom: 20px;
+#         }
 
-        .form-label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: #333;
-        }
+#         .form-label {
+#             display: block;
+#             margin-bottom: 8px;
+#             font-weight: 500;
+#             color: #333;
+#         }
 
-        .form-input {
-            width: 100%;
-            padding: 12px 16px;
-            border: 2px solid #e1e5e9;
-            border-radius: 10px;
-            font-size: 16px;
-            transition: all 0.3s ease;
-            background: #f8f9fa;
-        }
+#         .form-input {
+#             width: 100%;
+#             padding: 12px 16px;
+#             border: 2px solid #e1e5e9;
+#             border-radius: 10px;
+#             font-size: 16px;
+#             transition: all 0.3s ease;
+#             background: #f8f9fa;
+#         }
 
-        .form-input:focus {
-            outline: none;
-            border-color: #667eea;
-            background: white;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
+#         .form-input:focus {
+#             outline: none;
+#             border-color: #667eea;
+#             background: white;
+#             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+#         }
 
-        .btn {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            border: none;
-            padding: 14px 28px;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            text-decoration: none;
-            min-width: 160px;
-            justify-content: center;
-        }
+#         .btn {
+#             background: linear-gradient(135deg, #667eea, #764ba2);
+#             color: white;
+#             border: none;
+#             padding: 14px 28px;
+#             border-radius: 10px;
+#             font-size: 16px;
+#             font-weight: 600;
+#             cursor: pointer;
+#             transition: all 0.3s ease;
+#             display: inline-flex;
+#             align-items: center;
+#             gap: 8px;
+#             text-decoration: none;
+#             min-width: 160px;
+#             justify-content: center;
+#         }
 
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
-        }
+#         .btn:hover {
+#             transform: translateY(-2px);
+#             box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+#         }
 
-        .btn:active {
-            transform: translateY(0);
-        }
+#         .btn:active {
+#             transform: translateY(0);
+#         }
 
-        .btn-secondary {
-            background: linear-gradient(135deg, #ffecd2, #fcb69f);
-            color: #8b4513;
-        }
+#         .btn-secondary {
+#             background: linear-gradient(135deg, #ffecd2, #fcb69f);
+#             color: #8b4513;
+#         }
 
-        .btn-secondary:hover {
-            box-shadow: 0 10px 20px rgba(252, 182, 159, 0.3);
-        }
+#         .btn-secondary:hover {
+#             box-shadow: 0 10px 20px rgba(252, 182, 159, 0.3);
+#         }
 
-        .result {
-            margin-top: 20px;
-            padding: 16px;
-            border-radius: 10px;
-            font-weight: 500;
-            opacity: 0;
-            animation: fadeIn 0.5s ease-out forwards;
-        }
+#         .result {
+#             margin-top: 20px;
+#             padding: 16px;
+#             border-radius: 10px;
+#             font-weight: 500;
+#             opacity: 0;
+#             animation: fadeIn 0.5s ease-out forwards;
+#         }
 
-        @keyframes fadeIn {
-            to {
-                opacity: 1;
-            }
-        }
+#         @keyframes fadeIn {
+#             to {
+#                 opacity: 1;
+#             }
+#         }
 
-        .result.success {
-            background: linear-gradient(135deg, #d4edda, #c3e6cb);
-            color: #155724;
-            border-left: 4px solid #28a745;
-        }
+#         .result.success {
+#             background: linear-gradient(135deg, #d4edda, #c3e6cb);
+#             color: #155724;
+#             border-left: 4px solid #28a745;
+#         }
 
-        .result.error {
-            background: linear-gradient(135deg, #f8d7da, #f5c6cb);
-            color: #721c24;
-            border-left: 4px solid #dc3545;
-        }
+#         .result.error {
+#             background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+#             color: #721c24;
+#             border-left: 4px solid #dc3545;
+#         }
 
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 1s ease-in-out infinite;
-        }
+#         .loading {
+#             display: inline-block;
+#             width: 20px;
+#             height: 20px;
+#             border: 3px solid rgba(255, 255, 255, 0.3);
+#             border-radius: 50%;
+#             border-top-color: white;
+#             animation: spin 1s ease-in-out infinite;
+#         }
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
+#         @keyframes spin {
+#             to { transform: rotate(360deg); }
+#         }
 
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-top: 15px;
-        }
+#         .info-grid {
+#             display: grid;
+#             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+#             gap: 15px;
+#             margin-top: 15px;
+#         }
 
-        .info-item {
-            background: #f8f9fa;
-            padding: 12px;
-            border-radius: 8px;
-            border-left: 3px solid #667eea;
-        }
+#         .info-item {
+#             background: #f8f9fa;
+#             padding: 12px;
+#             border-radius: 8px;
+#             border-left: 3px solid #667eea;
+#         }
 
-        .info-label {
-            font-size: 0.85rem;
-            color: #666;
-            margin-bottom: 4px;
-        }
+#         .info-label {
+#             font-size: 0.85rem;
+#             color: #666;
+#             margin-bottom: 4px;
+#         }
 
-        .info-value {
-            font-weight: 600;
-            color: #333;
-            word-break: break-all;
-        }
+#         .info-value {
+#             font-weight: 600;
+#             color: #333;
+#             word-break: break-all;
+#         }
 
-        .footer {
-            text-align: center;
-            margin-top: 40px;
-            padding-top: 30px;
-            border-top: 1px solid #e1e5e9;
-            color: #666;
-        }
+#         .footer {
+#             text-align: center;
+#             margin-top: 40px;
+#             padding-top: 30px;
+#             border-top: 1px solid #e1e5e9;
+#             color: #666;
+#         }
 
-        @media (max-width: 768px) {
-            .container {
-                padding: 20px;
-                margin: 10px;
-            }
+#         @media (max-width: 768px) {
+#             .container {
+#                 padding: 20px;
+#                 margin: 10px;
+#             }
             
-            .header h1 {
-                font-size: 2rem;
-            }
+#             .header h1 {
+#                 font-size: 2rem;
+#             }
             
-            .section {
-                padding: 20px;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>QCIAutomate 许可证生成器</h1>
-            <p>专业的软件许可证管理系统</p>
-        </div>
+#             .section {
+#                 padding: 20px;
+#             }
+#         }
+#     </style>
+# </head>
+# <body>
+#     <div class="container">
+#         <div class="header">
+#             <h1>QCIAutomate 许可证生成器</h1>
+#             <p>专业的软件许可证管理系统</p>
+#         </div>
 
-        <div class="section">
-            <div class="section-title">
-                <div class="section-icon">1</div>
-                获取本机硬件ID
-            </div>
-            <p style="margin-bottom: 20px; color: #666;">
-                点击下方按钮获取当前计算机的唯一硬件标识符
-            </p>
-            <button class="btn" onclick="getLocalHardwareId()">
-                <span id="hardware-btn-text">获取硬件ID</span>
-                <div id="hardware-loading" class="loading" style="display: none;"></div>
-            </button>
-            <div id="hardware-result"></div>
-        </div>
+#         <div class="section">
+#             <div class="section-title">
+#                 <div class="section-icon">1</div>
+#                 获取本机硬件ID
+#             </div>
+#             <p style="margin-bottom: 20px; color: #666;">
+#                 点击下方按钮获取当前计算机的唯一硬件标识符
+#             </p>
+#             <button class="btn" onclick="getLocalHardwareId()">
+#                 <span id="hardware-btn-text">获取硬件ID</span>
+#                 <div id="hardware-loading" class="loading" style="display: none;"></div>
+#             </button>
+#             <div id="hardware-result"></div>
+#         </div>
 
-        <div class="section">
-            <div class="section-title">
-                <div class="section-icon">2</div>
-                生成许可证文件
-            </div>
-            <form id="license-form">
-                <div class="form-group">
-                    <label class="form-label">客户名称</label>
-                    <input type="text" class="form-input" id="customer_name" value="Local User" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">硬件ID</label>
-                    <input type="text" class="form-input" id="hardware_id" placeholder="请先获取硬件ID或手动输入" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">许可证有效期（天）</label>
-                    <input type="number" class="form-input" id="expiry_days" value="365" min="1" max="3650" required>
-                </div>
-                <button type="submit" class="btn">
-                    <span id="license-btn-text">生成许可证文件</span>
-                    <div id="license-loading" class="loading" style="display: none;"></div>
-                </button>
-            </form>
-            <div id="license-result"></div>
-        </div>
+#         <div class="section">
+#             <div class="section-title">
+#                 <div class="section-icon">2</div>
+#                 生成许可证文件
+#             </div>
+#             <form id="license-form">
+#                 <div class="form-group">
+#                     <label class="form-label">客户名称</label>
+#                     <input type="text" class="form-input" id="customer_name" value="Local User" required>
+#                 </div>
+#                 <div class="form-group">
+#                     <label class="form-label">硬件ID</label>
+#                     <input type="text" class="form-input" id="hardware_id" placeholder="请先获取硬件ID或手动输入" required>
+#                 </div>
+#                 <div class="form-group">
+#                     <label class="form-label">许可证有效期（天）</label>
+#                     <input type="number" class="form-input" id="expiry_days" value="365" min="1" max="3650" required>
+#                 </div>
+#                 <button type="submit" class="btn">
+#                     <span id="license-btn-text">生成许可证文件</span>
+#                     <div id="license-loading" class="loading" style="display: none;"></div>
+#                 </button>
+#             </form>
+#             <div id="license-result"></div>
+#         </div>
 
-        <div class="section">
-            <div class="section-title">
-                <div class="section-icon">3</div>
-                快速生成本机许可证
-            </div>
-            <p style="margin-bottom: 20px; color: #666;">
-                一键为当前计算机生成默认的365天有效期许可证文件
-            </p>
-            <button class="btn btn-secondary" onclick="createDefaultLicense()">
-                <span id="default-btn-text">生成本机许可证</span>
-                <div id="default-loading" class="loading" style="display: none;"></div>
-            </button>
-            <div id="default-result"></div>
-        </div>
+#         <div class="section">
+#             <div class="section-title">
+#                 <div class="section-icon">3</div>
+#                 快速生成本机许可证
+#             </div>
+#             <p style="margin-bottom: 20px; color: #666;">
+#                 一键为当前计算机生成默认的365天有效期许可证文件
+#             </p>
+#             <button class="btn btn-secondary" onclick="createDefaultLicense()">
+#                 <span id="default-btn-text">生成本机许可证</span>
+#                 <div id="default-loading" class="loading" style="display: none;"></div>
+#             </button>
+#             <div id="default-result"></div>
+#         </div>
 
-        <div class="footer">
-            <p>QCIAutomate License System v1.0.6</p>
-            <p style="margin-top: 5px; font-size: 0.9rem;">安全可靠的软件许可证管理解决方案</p>
-        </div>
-    </div>
+#         <div class="footer">
+#             <p>QCIAutomate License System v1.0.6</p>
+#             <p style="margin-top: 5px; font-size: 0.9rem;">安全可靠的软件许可证管理解决方案</p>
+#         </div>
+#     </div>
 
-    <script>
-        function showLoading(buttonId, loadingId, textId) {
-            document.getElementById(textId).style.display = 'none';
-            document.getElementById(loadingId).style.display = 'inline-block';
-            document.getElementById(buttonId.replace('-btn-text', '').replace('-loading', '')).disabled = true;
-        }
+#     <script>
+#         function showLoading(buttonId, loadingId, textId) {
+#             document.getElementById(textId).style.display = 'none';
+#             document.getElementById(loadingId).style.display = 'inline-block';
+#             document.getElementById(buttonId.replace('-btn-text', '').replace('-loading', '')).disabled = true;
+#         }
 
-        function hideLoading(buttonId, loadingId, textId) {
-            document.getElementById(textId).style.display = 'inline';
-            document.getElementById(loadingId).style.display = 'none';
-            document.getElementById(buttonId.replace('-btn-text', '').replace('-loading', '')).disabled = false;
-        }
+#         function hideLoading(buttonId, loadingId, textId) {
+#             document.getElementById(textId).style.display = 'inline';
+#             document.getElementById(loadingId).style.display = 'none';
+#             document.getElementById(buttonId.replace('-btn-text', '').replace('-loading', '')).disabled = false;
+#         }
 
-        async function getLocalHardwareId() {
-            const resultDiv = document.getElementById('hardware-result');
-            showLoading('hardware-btn', 'hardware-loading', 'hardware-btn-text');
+#         async function getLocalHardwareId() {
+#             const resultDiv = document.getElementById('hardware-result');
+#             showLoading('hardware-btn', 'hardware-loading', 'hardware-btn-text');
             
-            try {
-                const response = await fetch('/api/get-hardware-id');
-                const data = await response.json();
+#             try {
+#                 const response = await fetch('/api/get-hardware-id');
+#                 const data = await response.json();
                 
-                if (response.ok) {
-                    resultDiv.className = 'result success';
-                    let infoHtml = `
-                        <div style="margin-bottom: 15px;">
-                            <strong>硬件ID获取成功</strong>
-                        </div>
-                        <div class="info-grid">
-                            <div class="info-item">
-                                <div class="info-label">硬件ID</div>
-                                <div class="info-value">${data.hardware_id}</div>
-                            </div>
-                            <div class="info-item">
-                                <div class="info-label">操作系统</div>
-                                <div class="info-value">${data.system_info || 'N/A'}</div>
-                            </div>
-                            <div class="info-item">
-                                <div class="info-label">处理器</div>
-                                <div class="info-value">${data.processor || 'N/A'}</div>
-                            </div>
-                            <div class="info-item">
-                                <div class="info-label">机器类型</div>
-                                <div class="info-value">${data.machine || 'N/A'}</div>
-                            </div>
-                    `;
+#                 if (response.ok) {
+#                     resultDiv.className = 'result success';
+#                     let infoHtml = `
+#                         <div style="margin-bottom: 15px;">
+#                             <strong>硬件ID获取成功</strong>
+#                         </div>
+#                         <div class="info-grid">
+#                             <div class="info-item">
+#                                 <div class="info-label">硬件ID</div>
+#                                 <div class="info-value">${data.hardware_id}</div>
+#                             </div>
+#                             <div class="info-item">
+#                                 <div class="info-label">操作系统</div>
+#                                 <div class="info-value">${data.system_info || 'N/A'}</div>
+#                             </div>
+#                             <div class="info-item">
+#                                 <div class="info-label">处理器</div>
+#                                 <div class="info-value">${data.processor || 'N/A'}</div>
+#                             </div>
+#                             <div class="info-item">
+#                                 <div class="info-label">机器类型</div>
+#                                 <div class="info-value">${data.machine || 'N/A'}</div>
+#                             </div>
+#                     `;
                     
-                    if (data.os_name) {
-                        infoHtml += `
-                            <div class="info-item">
-                                <div class="info-label">系统版本</div>
-                                <div class="info-value">${data.os_name}</div>
-                            </div>
-                        `;
-                    }
+#                     if (data.os_name) {
+#                         infoHtml += `
+#                             <div class="info-item">
+#                                 <div class="info-label">系统版本</div>
+#                                 <div class="info-value">${data.os_name}</div>
+#                             </div>
+#                         `;
+#                     }
                     
-                    if (data.cpu_name) {
-                        infoHtml += `
-                            <div class="info-item">
-                                <div class="info-label">CPU型号</div>
-                                <div class="info-value">${data.cpu_name}</div>
-                            </div>
-                        `;
-                    }
+#                     if (data.cpu_name) {
+#                         infoHtml += `
+#                             <div class="info-item">
+#                                 <div class="info-label">CPU型号</div>
+#                                 <div class="info-value">${data.cpu_name}</div>
+#                             </div>
+#                         `;
+#                     }
                     
-                    if (data.total_memory) {
-                        infoHtml += `
-                            <div class="info-item">
-                                <div class="info-label">内存容量</div>
-                                <div class="info-value">${data.total_memory}</div>
-                            </div>
-                        `;
-                    }
+#                     if (data.total_memory) {
+#                         infoHtml += `
+#                             <div class="info-item">
+#                                 <div class="info-label">内存容量</div>
+#                                 <div class="info-value">${data.total_memory}</div>
+#                             </div>
+#                         `;
+#                     }
                     
-                    infoHtml += '</div>';
-                    resultDiv.innerHTML = infoHtml;
-                    document.getElementById('hardware_id').value = data.hardware_id;
-                } else {
-                    throw new Error(data.error);
-                }
-            } catch (error) {
-                resultDiv.className = 'result error';
-                resultDiv.innerHTML = '获取硬件ID失败: ' + error.message;
-            } finally {
-                hideLoading('hardware-btn', 'hardware-loading', 'hardware-btn-text');
-            }
-        }
+#                     infoHtml += '</div>';
+#                     resultDiv.innerHTML = infoHtml;
+#                     document.getElementById('hardware_id').value = data.hardware_id;
+#                 } else {
+#                     throw new Error(data.error);
+#                 }
+#             } catch (error) {
+#                 resultDiv.className = 'result error';
+#                 resultDiv.innerHTML = '获取硬件ID失败: ' + error.message;
+#             } finally {
+#                 hideLoading('hardware-btn', 'hardware-loading', 'hardware-btn-text');
+#             }
+#         }
 
-        document.getElementById('license-form').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const resultDiv = document.getElementById('license-result');
-            showLoading('license-btn', 'license-loading', 'license-btn-text');
+#         document.getElementById('license-form').addEventListener('submit', async function(e) {
+#             e.preventDefault();
+#             const resultDiv = document.getElementById('license-result');
+#             showLoading('license-btn', 'license-loading', 'license-btn-text');
             
-            const formData = new FormData();
-            formData.append('customer_name', document.getElementById('customer_name').value);
-            formData.append('hardware_id', document.getElementById('hardware_id').value);
-            formData.append('expiry_days', document.getElementById('expiry_days').value);
+#             const formData = new FormData();
+#             formData.append('customer_name', document.getElementById('customer_name').value);
+#             formData.append('hardware_id', document.getElementById('hardware_id').value);
+#             formData.append('expiry_days', document.getElementById('expiry_days').value);
             
-            try {
-                const response = await fetch('/generate', {
-                    method: 'POST',
-                    body: formData
-                });
+#             try {
+#                 const response = await fetch('/generate', {
+#                     method: 'POST',
+#                     body: formData
+#                 });
 
-                if (response.ok) {
-                    const blob = await response.blob();
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = 'license.lic';
-                    a.click();
-                    window.URL.revokeObjectURL(url);
+#                 if (response.ok) {
+#                     const blob = await response.blob();
+#                     const url = window.URL.createObjectURL(blob);
+#                     const a = document.createElement('a');
+#                     a.href = url;
+#                     a.download = 'license.lic';
+#                     a.click();
+#                     window.URL.revokeObjectURL(url);
 
-                    resultDiv.className = 'result success';
-                    resultDiv.innerHTML = `
-                        <div style="margin-bottom: 10px;"><strong>许可证文件生成成功</strong></div>
-                        <div>文件已自动下载到您的计算机</div>
-                        <div style="margin-top: 10px;">
-                            <div class="info-item">
-                                <div class="info-label">客户名称</div>
-                                <div class="info-value">${document.getElementById('customer_name').value}</div>
-                            </div>
-                        </div>
-                    `;
-                } else {
-                    const errorData = await response.json();
-                    throw new Error(errorData.error);
-                }
-            } catch (error) {
-                resultDiv.className = 'result error';
-                resultDiv.innerHTML = '生成许可证失败: ' + error.message;
-            } finally {
-                hideLoading('license-btn', 'license-loading', 'license-btn-text');
-            }
-        });
+#                     resultDiv.className = 'result success';
+#                     resultDiv.innerHTML = `
+#                         <div style="margin-bottom: 10px;"><strong>许可证文件生成成功</strong></div>
+#                         <div>文件已自动下载到您的计算机</div>
+#                         <div style="margin-top: 10px;">
+#                             <div class="info-item">
+#                                 <div class="info-label">客户名称</div>
+#                                 <div class="info-value">${document.getElementById('customer_name').value}</div>
+#                             </div>
+#                         </div>
+#                     `;
+#                 } else {
+#                     const errorData = await response.json();
+#                     throw new Error(errorData.error);
+#                 }
+#             } catch (error) {
+#                 resultDiv.className = 'result error';
+#                 resultDiv.innerHTML = '生成许可证失败: ' + error.message;
+#             } finally {
+#                 hideLoading('license-btn', 'license-loading', 'license-btn-text');
+#             }
+#         });
 
-        async function createDefaultLicense() {
-            const resultDiv = document.getElementById('default-result');
-            showLoading('default-btn', 'default-loading', 'default-btn-text');
+#         async function createDefaultLicense() {
+#             const resultDiv = document.getElementById('default-result');
+#             showLoading('default-btn', 'default-loading', 'default-btn-text');
             
-            try {
-                const response = await fetch('/api/create-default-license', {
-                    method: 'POST'
-                });
+#             try {
+#                 const response = await fetch('/api/create-default-license', {
+#                     method: 'POST'
+#                 });
 
-                if (response.ok) {
-                    const blob = await response.blob();
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = 'license.lic';
-                    a.click();
-                    window.URL.revokeObjectURL(url);
+#                 if (response.ok) {
+#                     const blob = await response.blob();
+#                     const url = window.URL.createObjectURL(blob);
+#                     const a = document.createElement('a');
+#                     a.href = url;
+#                     a.download = 'license.lic';
+#                     a.click();
+#                     window.URL.revokeObjectURL(url);
 
-                    resultDiv.className = 'result success';
-                    resultDiv.innerHTML = `
-                        <div style="margin-bottom: 10px;"><strong>本机许可证创建成功</strong></div>
-                        <div>默认365天有效期的许可证文件已下载</div>
-                        <div style="margin-top: 10px; font-size: 0.9rem; color: #666;">
-                            该许可证绑定到当前计算机硬件，仅限本机使用
-                        </div>
-                    `;
-                } else {
-                    const errorData = await response.json();
-                    throw new Error(errorData.error);
-                }
-            } catch (error) {
-                resultDiv.className = 'result error';
-                resultDiv.innerHTML = '创建本机许可证失败: ' + error.message;
-            } finally {
-                hideLoading('default-btn', 'default-loading', 'default-btn-text');
-            }
-        }
+#                     resultDiv.className = 'result success';
+#                     resultDiv.innerHTML = `
+#                         <div style="margin-bottom: 10px;"><strong>本机许可证创建成功</strong></div>
+#                         <div>默认365天有效期的许可证文件已下载</div>
+#                         <div style="margin-top: 10px; font-size: 0.9rem; color: #666;">
+#                             该许可证绑定到当前计算机硬件，仅限本机使用
+#                         </div>
+#                     `;
+#                 } else {
+#                     const errorData = await response.json();
+#                     throw new Error(errorData.error);
+#                 }
+#             } catch (error) {
+#                 resultDiv.className = 'result error';
+#                 resultDiv.innerHTML = '创建本机许可证失败: ' + error.message;
+#             } finally {
+#                 hideLoading('default-btn', 'default-loading', 'default-btn-text');
+#             }
+#         }
 
-        // 页面加载完成后的初始化
-        document.addEventListener('DOMContentLoaded', function() {
-            // 可以在这里添加页面初始化逻辑
-            console.log('QCIAutomate License Generator 已加载');
-        });
-    </script>
-</body>
-</html>
-        """
+#         // 页面加载完成后的初始化
+#         document.addEventListener('DOMContentLoaded', function() {
+#             // 可以在这里添加页面初始化逻辑
+#             console.log('QCIAutomate License Generator 已加载');
+#         });
+#     </script>
+# </body>
+# </html>
+#         """
 
-@app.route('/')
-def home():
-    """首页，显示硬件ID输入表单"""
-    return get_html_template()
+# @app.route('/')
+# def home():
+#     """首页，显示硬件ID输入表单"""
+#     return get_html_template()
 
 @app.route('/api/get-hardware-id', methods=['GET'])
 def get_hardware_id():
