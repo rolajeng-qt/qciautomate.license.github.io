@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QCIAutomate License Generator - Quanta</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+
+        :root {
+            --primary-color: #4A90E2;
+            --primary-dark: #3770B7;
+            --secondary-color: #50E3C2;
+            --background-color: #f0f2f5;
+            --card-background: #ffffff;
+            --text-color: #333;
+            --border-color: #e0e0e0;
+            --success-bg: #EAF7EE;
+            --success-border: #C8E6C9;
+            --success-text: #1E824C;
+            --error-bg: #FDECEA;
+            --error-border: #EF9A9A;
+            --error-text: #C0392B;
+            --shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 2rem 1rem;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .company-branding {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            gap: 1rem;
+        }
+
+        .company-logo {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 700;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+        }
+
+        .company-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .company-name {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--primary-dark);
+            line-height: 1.2;
+        }
+
+        .company-tagline {
+            font-size: 0.9rem;
+            color: #666;
+            font-weight: 400;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .section {
+            background: var(--card-background);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .section:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-dark);
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 16px;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
+        }
+
+        .btn {
+            background: var(--primary-color);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+            width: 100%;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+        
+        .btn-secondary {
+            background: var(--secondary-color);
+            color: var(--text-color);
+        }
+        
+        .btn-secondary:hover {
+            background-color: #43C6B1;
+        }
+
+        .btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .result {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            line-height: 1.8;
+            opacity: 0;
+            animation: fadeIn 0.5s forwards;
+            display: none;
+        }
+        
+        .result.show {
+            display: block;
+        }
+
+        .result.success {
+            background-color: var(--success-bg);
+            border: 1px solid var(--success-border);
+            color: var(--success-text);
+        }
+
+        .result.error {
+            background-color: var(--error-bg);
+            border: 1px solid var(--error-border);
+            color: var(--error-text);
+        }
+
+        .loading-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .loading-text {
+            margin-left: 0.5rem;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--primary-color);
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .info-item {
+            background: var(--background-color);
+            padding: 0.75rem;
+            border-radius: 8px;
+            border-left: 3px solid var(--primary-color);
+        }
+
+        .info-label {
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 0.25rem;
+        }
+
+        .info-value {
+            font-weight: 600;
+            color: var(--text-color);
+            word-break: break-all;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+            color: #666;
+        }
+
+        .footer-branding {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-logo {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: 700;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(74, 144, 226, 0.2);
+        }
+
+        .footer-company {
+            text-align: left;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <!-- <div class="company-branding">
+                <div class="company-logo">Q</div>
+                <div class="company-info">
+                    <span class="company-name">Quanta</span>
+                    <span class="company-tagline">Innovation & Excellence</span>
+                </div>
+            </div> -->
+            <h1>QCIAutomate License Generator</h1>
+            <p>Professional software license management system</p>
+        </div>
+
+        <div class="section">
+            <div class="section-title">
+                Get Local Hardware ID
+            </div>
+            <p style="margin-bottom: 1.5rem; color: #666;">
+                Click the button to get the current machine's hardware ID and automatically fill it into the form below.
+            </p>
+            <button class="btn" id="get-hardware-btn" onclick="getLocalHardwareId()">
+                <span id="hardware-btn-text">Get Local Hardware ID</span>
+            </button>
+            <div id="hardware-result" class="result"></div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">
+                Generate License File
+            </div>
+            <form id="license-form">
+                <div class="form-group">
+                    <label class="form-label" for="customer_name">Customer Name:</label>
+                    <input type="text" class="form-input" id="customer_name" value="Local User" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="company_name">Company/Organization:</label>
+                    <input type="text" class="form-input" id="company_name" placeholder="Enter company or organization name" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="hardware_id">Hardware ID:</label>
+                    <input type="text" class="form-input" id="hardware_id" placeholder="Click button above or enter manually" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="expiry_days">License Duration (Days):</label>
+                    <input type="number" class="form-input" id="expiry_days" value="365" min="1" max="3650" required>
+                </div>
+                <button type="submit" class="btn" id="generate-license-btn">
+                    <span id="license-btn-text">Generate license.lic File</span>
+                </button>
+            </form>
+            <div id="license-result" class="result"></div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">
+                Quick Generate Local License
+            </div>
+            <p style="margin-bottom: 1.5rem; color: #666;">
+                One-click generation of a 365-day valid license file for the current machine.
+            </p>
+            <button class="btn btn-secondary" id="create-default-btn" onclick="createDefaultLicense()">
+                <span id="default-btn-text">Create Default Local License File</span>
+            </button>
+            <div id="default-result" class="result"></div>
+        </div>
+
+        <div class="footer">
+            <div class="footer-branding">
+                <div class="footer-logo">Q</div>
+                <div class="footer-company">
+                    <p><strong>Quanta</strong> - QCIAutomate License System</p>
+                    <p style="margin-top: 5px; font-size: 0.9rem;">Secure and reliable software license management solution</p>
+                    <p style="margin-top: 8px; font-size: 0.8rem; color: #999;">© 2025 Quanta. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showResult(divId, message, isSuccess) {
+            const resultDiv = document.getElementById(divId);
+            resultDiv.innerHTML = message;
+            resultDiv.className = `result show ${isSuccess ? 'success' : 'error'}`;
+        }
+        
+        function showLoading(btnId) {
+            const btn = document.getElementById(btnId);
+            const originalText = btn.dataset.originalText;
+            if (!originalText) {
+                btn.dataset.originalText = btn.innerHTML;
+            }
+            btn.innerHTML = '<span class="spinner"></span> <span class="loading-text">Processing...</span>';
+            btn.disabled = true;
+        }
+
+        function hideLoading(btnId) {
+            const btn = document.getElementById(btnId);
+            btn.innerHTML = btn.dataset.originalText;
+            btn.disabled = false;
+        }
+
+        async function getLocalHardwareId() {
+            const resultDivId = 'hardware-result';
+            const btnId = 'get-hardware-btn';
+            showLoading(btnId);
+            
+            try {
+                const response = await fetch('/api/get-hardware-id');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    let infoHtml = `
+                        <div style="margin-bottom: 1rem; font-weight: 600;">Hardware ID retrieved successfully!</div>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <div class="info-label">Hardware ID</div>
+                                <div class="info-value">${data.hardware_id}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Operating System</div>
+                                <div class="info-value">${data.system_info || 'N/A'}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Processor</div>
+                                <div class="info-value">${data.processor || 'N/A'}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Model</div>
+                                <div class="info-value">${data.model || 'N/A'}</div>
+                            </div>
+                    `;
+                    
+                    if (data.cpu_name) {
+                        infoHtml += `
+                            <div class="info-item">
+                                <div class="info-label">CPU Model</div>
+                                <div class="info-value">${data.cpu_name}</div>
+                            </div>
+                        `;
+                    }
+                    
+                    if (data.total_memory) {
+                        infoHtml += `
+                            <div class="info-item">
+                                <div class="info-label">Memory Capacity</div>
+                                <div class="info-value">${data.total_memory}</div>
+                            </div>
+                        `;
+                    }
+                    
+                    infoHtml += '</div>';
+                    showResult(resultDivId, infoHtml, true);
+                    document.getElementById('hardware_id').value = data.hardware_id;
+                } else {
+                    throw new Error(data.error);
+                }
+            } catch (error) {
+                showResult(resultDivId, `Failed to get hardware ID: ${error.message}`, false);
+            } finally {
+                hideLoading(btnId);
+            }
+        }
+
+        document.getElementById('license-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const resultDivId = 'license-result';
+            const btnId = 'generate-license-btn';
+            showLoading(btnId);
+
+            const customer_name = document.getElementById('customer_name').value;
+            const company_name = document.getElementById('company_name').value;
+            const hardware_id = document.getElementById('hardware_id').value;
+            const expiry_days = document.getElementById('expiry_days').value;
+            
+            const formData = new FormData();
+            formData.append('customer_name', customer_name);
+            formData.append('company_name', company_name);
+            formData.append('hardware_id', hardware_id);
+            formData.append('expiry_days', expiry_days);
+            
+            try {
+                const response = await fetch('/generate', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'license.lic';
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+
+                    showResult(resultDivId, `
+                        <div style="font-weight: 600;">License file generated successfully!</div>
+                        <div>The file has been automatically downloaded to your computer.</div>
+                    `, true);
+                } else {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error);
+                }
+            } catch (error) {
+                showResult(resultDivId, `License generation failed: ${error.message}`, false);
+            } finally {
+                hideLoading(btnId);
+            }
+        });
+
+        async function createDefaultLicense() {
+            const resultDivId = 'default-result';
+            const btnId = 'create-default-btn';
+            showLoading(btnId);
+
+            try {
+                const response = await fetch('/api/create-default-license', {
+                    method: 'POST'
+                });
+
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'license.lic';
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+
+                    showResult(resultDivId, `
+                        <div style="font-weight: 600;">Default local license file created successfully!</div>
+                        <div>A 365-day valid license file has been downloaded.</div>
+                    `, true);
+                } else {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error);
+                }
+            } catch (error) {
+                showResult(resultDivId, `Failed to create local license: ${error.message}`, false);
+            } finally {
+                hideLoading(btnId);
+            }
+        }
+    </script>
+</body>
+</html>
