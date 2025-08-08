@@ -1,5 +1,5 @@
 from flask import Flask, request, send_file, jsonify, render_template_string
-from license_generator_web import LicenseGeneratorLogic
+from api.license_generator_web import LicenseGeneratorLogic
 import os
 import io
 import json
