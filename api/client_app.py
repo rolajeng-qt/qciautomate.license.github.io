@@ -1,6 +1,15 @@
-import requests
+import base64
+import hashlib
 import json
 import os
+import platform
+import subprocess
+import sys
+import uuid
+from datetime import datetime, timedelta
+
+import requests
+from cryptography.fernet import Fernet
 
 from license_generator_web import HardwareInfo, LicenseManager
 

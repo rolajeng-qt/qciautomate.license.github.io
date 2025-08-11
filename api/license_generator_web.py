@@ -1,12 +1,13 @@
+import base64
 import hashlib
 import json
-import uuid
+import os
 import platform
 import subprocess
-import base64
 import sys
-import os
+import uuid
 from datetime import datetime, timedelta
+
 from cryptography.fernet import Fernet
 
 # Windows 註冊表支援

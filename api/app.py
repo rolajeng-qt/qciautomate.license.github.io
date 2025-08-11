@@ -1,9 +1,15 @@
-from flask import Flask, request, send_file, jsonify, render_template_string
-import os
-import sys
+import base64
+import hashlib
 import io
 import json
+import os
 import platform
+import sys
+import uuid
+from datetime import datetime, timedelta
+
+from cryptography.fernet import Fernet
+from flask import Flask, jsonify, render_template_string, request, send_file
 
 # 確保可以導入同目錄下的模組
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -15,12 +21,6 @@ try:
 except ImportError as e:
     print(f"Import error: {e}")
     
-    # 創建最小替代實現
-    import hashlib
-    import uuid
-    from datetime import datetime, timedelta
-    from cryptography.fernet import Fernet
-    import base64
     
     class HardwareInfo:
         def get_hardware_id(self):
