@@ -5,6 +5,7 @@ import platform
 import subprocess
 import base64
 import sys
+import os
 from datetime import datetime, timedelta
 from cryptography.fernet import Fernet
 
@@ -24,10 +25,28 @@ class LicenseGeneratorLogic:
         """
         Initializes the license generator with a fixed secret key.
         """
-        key = b'QCIAutomate2024SecretKey32Chars!'
-        fernet_key = base64.urlsafe_b64encode(key)
-        self.fernet = Fernet(fernet_key)
-        print("🔑 License generator initialized with fixed key")
+        #key = b'QCIAutomate2024SecretKey32Chars!'
+        # fernet_key = base64.urlsafe_b64encode(key)
+        # self.fernet = Fernet(fernet_key)
+        # print("🔑 License generator initialized with fixed key")
+        try:
+            # os.environ.get() 用於從環境變數中讀取值
+            key_from_env = os.environ.get('LICENSE_KEY')
+            if not key_from_env:
+                raise ValueError("Environment variable 'LICENSE_KEY' not set.")
+
+            # Vercel 的環境變數是字串，需要先編碼成位元組
+            key_bytes = key_from_env.encode('utf-8')
+            
+            # 使用 base64 處理 Fernet 金鑰
+            fernet_key = base64.urlsafe_b64encode(key_bytes)
+            
+            self.fernet = Fernet(fernet_key)
+            print("🔑 License generator initialized with key from environment variable.")
+        except Exception as e:
+            # 如果讀取或初始化金鑰失敗，就終止程式以保證安全
+            print(f"Error initializing license generator: {e}")
+            sys.exit(1) # 終止程式
 
     def run_powershell_command(self, command, timeout=10):
         """
