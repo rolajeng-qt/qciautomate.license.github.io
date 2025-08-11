@@ -556,7 +556,7 @@ def generate_for_app():
     except Exception as e:
         print(f"API错误 - generate_for_app: {e}")
         return jsonify({"error": f"生成许可证文件失败: {str(e)}"}), 500
-    
+        
 @app.route('/api/get-hardware-id', methods=['GET'])
 def get_hardware_id():
     """API: 获取本机硬件ID（增强版 - 正确识别 Windows 11）"""
