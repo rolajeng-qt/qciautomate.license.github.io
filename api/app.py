@@ -36,7 +36,7 @@ except ImportError as e:
     class LicenseManager:
         def __init__(self):
             # 使用環境變數或默認密鑰
-            key_from_env = os.environ.get('LICENSE_KEY', 'QCIAutomate2024DefaultSecretKey12')
+            key_from_env = os.environ.get('LICENSE_KEY', 'QCIAutomate2024SecretKey32Chars!')
             key_bytes = key_from_env.encode('utf-8')[:32].ljust(32, b'0')
             self.fernet = Fernet(base64.urlsafe_b64encode(key_bytes))
             
