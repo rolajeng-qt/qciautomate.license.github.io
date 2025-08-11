@@ -3,13 +3,7 @@ import json
 import os
 import sys
 
-try:
-    from license_generator_web import LicenseGeneratorLogic
-except ImportError as e:
-    print(f"導入錯誤: {e}")
-    print("請確保 license_generator_web.py 文件存在於同一目錄中")
-    input("按任意鍵退出...")
-    sys.exit(1)
+from license_generator_web import HardwareInfo
 
 
 from license_generator_web import HardwareInfo, LicenseManager
@@ -20,8 +14,8 @@ def get_local_hardware_id():
     """獲取本機硬件ID"""
     try:
         # 創建許可證生成器實例
-        license_generator = LicenseGeneratorLogic()
-        hardware_id = license_generator.get_hardware_id()
+        hardware_info = HardwareInfo()
+        hardware_id = hardware_info.get_hardware_id()
         return hardware_id
     except Exception as e:
         print(f"獲取本機硬件ID時發生錯誤: {e}")

@@ -16,42 +16,10 @@ try:
 except ImportError:
     WINREG_AVAILABLE = False
 
-class LicenseGeneratorLogic:
-    """
-    Enhanced license generator with robust Windows 11 detection
-    that works even when wmic is not available.
-    """
-    def __init__(self):
-        """
-        Initializes the license generator with a fixed secret key.
-        """
-        #key = b'QCIAutomate2024SecretKey32Chars!'
-        # fernet_key = base64.urlsafe_b64encode(key)
-        # self.fernet = Fernet(fernet_key)
-        # print("🔑 License generator initialized with fixed key")
-        try:
-            # os.environ.get() 用於從環境變數中讀取值
-            key_from_env = os.environ.get('LICENSE_KEY')
-            if not key_from_env:
-                raise ValueError("Environment variable 'LICENSE_KEY' not set.")
-
-            # Vercel 的環境變數是字串，需要先編碼成位元組
-            key_bytes = key_from_env.encode('utf-8')
-            
-            # 使用 base64 處理 Fernet 金鑰
-            fernet_key = base64.urlsafe_b64encode(key_bytes)
-            
-            self.fernet = Fernet(fernet_key)
-            print("🔑 License generator initialized with key from environment variable.")
-        except Exception as e:
-            # 如果讀取或初始化金鑰失敗，就終止程式以保證安全
-            print(f"Error initializing license generator: {e}")
-            #sys.exit(1) # 終止程式
+class HardwareInfo:
+    """專門負責獲取硬體ID和系統資訊的類別，不依賴金鑰。"""
 
     def run_powershell_command(self, command, timeout=10):
-        """
-        執行 PowerShell 命令 (用於替代 wmic)
-        """
         try:
             full_command = ["powershell", "-Command", command]
             result = subprocess.run(
@@ -64,375 +32,308 @@ class LicenseGeneratorLogic:
                 errors='ignore'
             )
             return result.stdout.strip()
-        except Exception as e:
-            print(f"⚠️  PowerShell command failed: {e}")
-            return None
-
-    def get_windows_version_info(self):
-        """
-        獲取詳細的 Windows 版本資訊，使用多種方法確保相容性
-        """
-        version_info = {
-            "os_name": "Unknown",
-            "version": "Unknown",
-            "build": "Unknown",
-            "edition": "Unknown"
-        }
-        
-        try:
-            if platform.system() != "Windows":
-                return version_info
-            
-            # 方法 1: 使用 Windows Registry (最可靠)
-            if WINREG_AVAILABLE:
-                try:
-                    with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, 
-                                       r"SOFTWARE\Microsoft\Windows NT\CurrentVersion") as key:
-                        
-                        # 產品名稱
-                        try:
-                            product_name = winreg.QueryValueEx(key, "ProductName")[0]
-                            version_info["os_name"] = product_name
-                        except FileNotFoundError:
-                            pass
-                        
-                        # 版本號
-                        try:
-                            display_version = winreg.QueryValueEx(key, "DisplayVersion")[0]
-                            version_info["version"] = display_version
-                        except FileNotFoundError:
-                            try:
-                                release_id = winreg.QueryValueEx(key, "ReleaseId")[0]
-                                version_info["version"] = release_id
-                            except FileNotFoundError:
-                                pass
-                        
-                        # Build 號
-                        try:
-                            build = winreg.QueryValueEx(key, "CurrentBuild")[0]
-                            version_info["build"] = build
-                            
-                            # 根據 Build 號判斷是否為 Windows 11
-                            build_num = int(build)
-                            if build_num >= 22000:
-                                if "Windows 10" in version_info["os_name"]:
-                                    version_info["os_name"] = version_info["os_name"].replace("Windows 10", "Windows 11")
-                                elif version_info["os_name"] == "Unknown":
-                                    version_info["os_name"] = "Windows 11"
-                                    
-                        except (FileNotFoundError, ValueError):
-                            pass
-                        
-                        # 版本類型
-                        try:
-                            edition = winreg.QueryValueEx(key, "EditionID")[0]
-                            version_info["edition"] = edition
-                        except FileNotFoundError:
-                            pass
-                
-                except Exception as e:
-                    print(f"⚠️  Registry access failed: {e}")
-            
-            # 方法 2: 使用 PowerShell (替代 wmic)
-            if version_info["os_name"] == "Unknown" or version_info["build"] == "Unknown":
-                try:
-                    ps_command = """
-                    $os = Get-CimInstance -ClassName Win32_OperatingSystem
-                    $cs = Get-CimInstance -ClassName Win32_ComputerSystem
-                    Write-Output "$($os.Caption)|$($os.Version)|$($os.BuildNumber)|$($cs.Model)|$($cs.Manufacturer)"
-                    """
-                    
-                    result = self.run_powershell_command(ps_command)
-                    if result:
-                        parts = result.split('|')
-                        if len(parts) >= 3:
-                            if version_info["os_name"] == "Unknown":
-                                version_info["os_name"] = parts[0].strip()
-                            if version_info["build"] == "Unknown":
-                                version_info["build"] = parts[2].strip()
-                                
-                                # 再次檢查 Windows 11
-                                try:
-                                    build_num = int(parts[2])
-                                    if build_num >= 22000 and "Windows 10" in version_info["os_name"]:
-                                        version_info["os_name"] = version_info["os_name"].replace("Windows 10", "Windows 11")
-                                except ValueError:
-                                    pass
-                    
-                except Exception as e:
-                    print(f"⚠️  PowerShell OS detection failed: {e}")
-            
-            # 方法 3: 使用 platform 模組作為備用
-            if version_info["os_name"] == "Unknown":
-                platform_info = platform.platform()
-                if "Windows" in platform_info:
-                    version_info["os_name"] = "Windows"
-                    # 從 platform 資訊中提取版本
-                    if "10.0.26100" in platform_info or "26100" in platform_info:
-                        version_info["os_name"] = "Windows 11"
-                        version_info["build"] = "26100"
-                
-        except Exception as e:
-            print(f"❌ 獲取 Windows 版本資訊失敗: {e}")
-        
-        return version_info
+        except Exception:
+            return ""
 
     def get_system_hardware_info(self):
-        """
-        獲取硬體資訊，使用 PowerShell 替代 wmic
-        """
-        hardware_info = {
-            "model": "unknown",
-            "manufacturer": "unknown",
-            "total_memory": "unknown",
-            "cpu_name": "unknown",
-            "cpu_cores": "unknown",
-            "cpu_threads": "unknown"
-        }
-        
+        system_info = {}
         try:
-            if platform.system() != "Windows":
-                return hardware_info
-            
-            # 使用 PowerShell 獲取系統資訊
-            ps_command = """
-            $cs = Get-CimInstance -ClassName Win32_ComputerSystem
-            $cpu = Get-CimInstance -ClassName Win32_Processor | Select-Object -First 1
-            $memory = [math]::Round($cs.TotalPhysicalMemory / 1GB, 1)
-            Write-Output "$($cs.Model)|$($cs.Manufacturer)|$($memory)|$($cpu.Name)|$($cpu.NumberOfCores)|$($cpu.NumberOfLogicalProcessors)"
-            """
-            
-            result = self.run_powershell_command(ps_command)
-            if result:
-                parts = result.split('|')
-                if len(parts) >= 6:
-                    hardware_info["model"] = parts[0].strip() if parts[0].strip() else "unknown"
-                    hardware_info["manufacturer"] = parts[1].strip() if parts[1].strip() else "unknown"
-                    hardware_info["total_memory"] = f"{parts[2].strip()} GB" if parts[2].strip() else "unknown"
-                    hardware_info["cpu_name"] = parts[3].strip() if parts[3].strip() else "unknown"
-                    hardware_info["cpu_cores"] = parts[4].strip() if parts[4].strip() else "unknown"
-                    hardware_info["cpu_threads"] = parts[5].strip() if parts[5].strip() else "unknown"
-            
-            # 如果 PowerShell 失敗，嘗試使用舊的 wmic 方法作為備用
-            if hardware_info["model"] == "unknown":
-                try:
-                    result = subprocess.run(['wmic', 'computersystem', 'get', 'model'], 
-                                          capture_output=True, text=True, timeout=5)
-                    lines = result.stdout.strip().split('\n')
-                    if len(lines) > 1:
-                        hardware_info["model"] = lines[1].strip()
-                except Exception:
-                    pass
-                    
+            if platform.system() == "Windows":
+                # 使用 wmic 獲取主板、BIOS 和 CPU 資訊
+                bios_info = self.run_powershell_command("Get-CimInstance Win32_BIOS | Select-Object SerialNumber, SMBIOSBIOSVersion | Format-List")
+                board_info = self.run_powershell_command("Get-CimInstance Win32_BaseBoard | Select-Object SerialNumber | Format-List")
+                
+                system_info['os_name'] = self.run_powershell_command("Get-CimInstance Win32_OperatingSystem | Select-Object Caption | Format-List")
+                system_info['windows_version'] = self.run_powershell_command("Get-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion' -Name DisplayVersion | Select-Object -ExpandProperty DisplayVersion")
+                system_info['windows_build'] = self.run_powershell_command("Get-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion' -Name CurrentBuildNumber | Select-Object -ExpandProperty CurrentBuildNumber")
+                system_info['windows_edition'] = self.run_powershell_command("Get-CimInstance Win32_OperatingSystem | Select-Object OSArchitecture | Format-List")
+                system_info['manufacturer'] = self.run_powershell_command("Get-CimInstance Win32_ComputerSystem | Select-Object Manufacturer | Format-List")
+
+                cpu_info = self.run_powershell_command("Get-CimInstance Win32_Processor | Select-Object Name, NumberOfCores, NumberOfLogicalProcessors | Format-List")
+                
+                system_info['serial_number_bios'] = bios_info.split('\n')[0].replace("SerialNumber : ", "").strip() if bios_info else ""
+                system_info['smbios_version'] = bios_info.split('\n')[1].replace("SMBIOSBIOSVersion : ", "").strip() if bios_info and len(bios_info.split('\n')) > 1 else ""
+                system_info['serial_number_board'] = board_info.split('\n')[0].replace("SerialNumber : ", "").strip() if board_info else ""
+                
+                cpu_details = {}
+                if cpu_info:
+                    for line in cpu_info.split('\n'):
+                        if ":" in line:
+                            key, value = line.split(':', 1)
+                            cpu_details[key.strip()] = value.strip()
+                system_info['cpu_name'] = cpu_details.get('Name', 'unknown')
+                system_info['cpu_cores'] = cpu_details.get('NumberOfCores', 'unknown')
+                system_info['cpu_threads'] = cpu_details.get('NumberOfLogicalProcessors', 'unknown')
+                
+                mem_info = self.run_powershell_command("Get-CimInstance Win32_ComputerSystem | Select-Object TotalPhysicalMemory | Format-List")
+                system_info['total_memory'] = mem_info.replace("TotalPhysicalMemory : ", "").strip() if mem_info else "unknown"
+
         except Exception as e:
-            print(f"⚠️  獲取硬體資訊失敗: {e}")
+            system_info['error'] = str(e)
+            
+        system_info['platform_detailed'] = platform.platform(terse=False)
+        system_info['machine'] = platform.machine()
+        system_info['processor'] = platform.processor()
+        system_info['system'] = platform.system()
         
-        return hardware_info
+        return system_info
 
     def get_hardware_id(self):
-        """
-        生成硬體ID，增強的版本
-        """
         try:
-            # Get MAC address
-            mac = ':'.join(['{:02x}'.format((uuid.getnode() >> i) & 0xff)
-                             for i in range(0, 8*6, 8)][::-1])
-            cpu = platform.processor()
-            machine = platform.machine()
+            combined_string = ""
+            if platform.system() == "Windows":
+                # Get BIOS Serial Number
+                bios_serial = self.run_powershell_command("wmic bios get serialnumber")
+                if bios_serial:
+                    combined_string += bios_serial.split('\n')[2].strip()
+                
+                # Get Motherboard Serial Number
+                board_serial = self.run_powershell_command("wmic baseboard get serialnumber")
+                if board_serial:
+                    combined_string += board_serial.split('\n')[2].strip()
+                
+                # Get CPU ID
+                cpu_id = self.run_powershell_command("wmic cpu get processorid")
+                if cpu_id:
+                    combined_string += cpu_id.split('\n')[2].strip()
+                
+                # Get Windows Product Key (使用 Regedit 獲取，更穩定)
+                if WINREG_AVAILABLE:
+                    try:
+                        key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\Microsoft\Windows NT\CurrentVersion")
+                        product_id, _ = winreg.QueryValueEx(key, "ProductId")
+                        combined_string += product_id
+                    except FileNotFoundError:
+                        pass
+                
+            else: # For non-Windows systems (e.g., Linux/macOS)
+                combined_string += str(uuid.getnode())
+
+            # Fallback if the combined string is empty
+            if not combined_string:
+                combined_string = str(uuid.uuid4())
             
-            # 獲取更詳細的硬體資訊
-            hardware_info = self.get_system_hardware_info()
-            model = hardware_info["model"]
-            
-            # 如果無法獲取型號，使用預設值
-            if model == "unknown":
-                model = "generic_pc"
-            
-            # Combine all collected info into a single string
-            hardware_string = f"{mac}{cpu}{machine}{model}"
-            
-            # Use SHA256 hash to create a unique, fixed-length ID
-            hardware_id = hashlib.sha256(hardware_string.encode()).hexdigest()[:32]
-            print("="*50)
+            # Hash the combined string to generate a unique ID
+            hardware_id = hashlib.md5(combined_string.encode('utf-8')).hexdigest()
             print(f"Hardware ID generated: {hardware_id}")
-            print(f"System Info: {platform.platform()}")
-            print(f"Processor: {cpu}")
-            print(f"Machine Type: {machine}")
-            print(f"Model: {model}")
-            print("="*50)
             return hardware_id
+            
         except Exception as e:
-            print(f"❌ Failed to get hardware ID: {e}")
+            print(f"Error getting hardware ID: {e}")
             return None
 
-    def get_system_info(self):
-        """
-        獲取詳細系統資訊，整合所有資訊來源
-        """
-        try:
-            info = {
-                "platform": platform.platform(),
-                "system": platform.system(),
-                "processor": platform.processor(),
-                "machine": platform.machine(),
-                "python_version": platform.python_version(),
-                "model": "unknown"
-            }
-            
-            # 獲取 Windows 特有資訊
-            if platform.system() == "Windows":
-                # 獲取 Windows 版本資訊
-                windows_info = self.get_windows_version_info()
-                
-                # 獲取硬體資訊
-                hardware_info = self.get_system_hardware_info()
-                
-                # 合併資訊
-                info.update({
-                    "os_name": windows_info["os_name"],
-                    "windows_version": windows_info["version"],
-                    "windows_build": windows_info["build"],
-                    "windows_edition": windows_info["edition"],
-                    "model": hardware_info["model"],
-                    "manufacturer": hardware_info["manufacturer"],
-                    "total_memory": hardware_info["total_memory"],
-                    "cpu_name": hardware_info["cpu_name"],
-                    "cpu_cores": hardware_info["cpu_cores"],
-                    "cpu_threads": hardware_info["cpu_threads"]
-                })
-                
-                # 建立更好的平台描述
-                if windows_info["os_name"] != "Unknown":
-                    platform_parts = [windows_info["os_name"]]
-                    if windows_info["version"] != "Unknown":
-                        platform_parts.append(f"Version {windows_info['version']}")
-                    if windows_info["build"] != "Unknown":
-                        platform_parts.append(f"Build {windows_info['build']}")
-                    if windows_info["edition"] != "Unknown":
-                        platform_parts.append(windows_info["edition"])
-                    
-                    info["platform_detailed"] = " - ".join(platform_parts)
-            
-            return info
-        except Exception as e:
-            print(f"❌ Failed to get system info: {e}")
-            return {"error": str(e)}
+    def validate_hardware_id_format(self, hardware_id):
+        return hardware_id and isinstance(hardware_id, str) and len(hardware_id) == 32 and all(c in "0123456789abcdef" for c in hardware_id)
 
-    def generate_license_content(self, username, hardware_id, expiry_days):
-        """
-        生成加密的授權內容
-        """
+class LicenseManager:
+    """專門負責授權生成與驗證的類別，需要金鑰才能初始化。"""
+
+    def __init__(self):
         try:
-            if not username or not username.strip():
-                username = "Unknown User"
-            
-            if not hardware_id or len(hardware_id) < 8:
-                raise ValueError("Invalid hardware ID")
-            
-            if expiry_days < 1 or expiry_days > 3650:
-                raise ValueError("Expiry days must be between 1 and 3650")
-            
+            # 從環境變數中讀取金鑰，確保後端安全
+            key_from_env = os.environ.get('LICENSE_KEY')
+            if not key_from_env:
+                raise ValueError("Environment variable 'LICENSE_KEY' not set.")
+            key_bytes = key_from_env.encode('utf-8')
+            fernet_key = base64.urlsafe_b64encode(key_bytes)
+            self.fernet = Fernet(fernet_key)
+            print("🔑 License generator initialized from environment variable.")
+        except Exception as e:
+            print(f"Error initializing LicenseManager: {e}")
+            sys.exit(1)
+
+    def generate_license_content(self, customer_name, hardware_id, expiry_days):
+        try:
+            expiry_date = datetime.now() + timedelta(days=expiry_days)
             license_data = {
-                "username": username.strip(),
+                "customer_name": customer_name,
                 "hardware_id": hardware_id,
-                "issued_date": datetime.now().isoformat(),
-                "expiry_date": (datetime.now() + timedelta(days=expiry_days)).isoformat(),
-                "features": ["full_access"],
-                "version": "1.0.6",
-                "issued_by": "QCIAutomate License Server",
-                "license_type": "hardware_bound"
+                "expiry_date": expiry_date.isoformat(),
+                "created_at": datetime.now().isoformat()
             }
             
-            encrypted_data = self.fernet.encrypt(json.dumps(license_data).encode())
-            
-            print(f"License generated for: {username}")
-            print(f"Hardware ID: {hardware_id[:8]}...")
-            print(f"Valid for: {expiry_days} days")
-            print(f"Expires: {license_data['expiry_date'][:10]}")
+            json_data = json.dumps(license_data, indent=4).encode('utf-8')
+            encrypted_data = self.fernet.encrypt(json_data)
             
             return encrypted_data
         except Exception as e:
-            print(f"❌ Failed to generate license content: {e}")
+            print(f"Error generating license content: {e}")
             return None
 
-    def create_default_license_for_current_machine(self):
-        """為當前機器建立預設授權檔案"""
+    def validate_license_file(self, hardware_id, license_file_path):
         try:
-            hardware_id = self.get_hardware_id()
-            if not hardware_id:
-                print("❌ Cannot create default license: Unable to get hardware ID")
-                return None
+            with open(license_file_path, "rb") as f:
+                encrypted_data = f.read()
             
-            license_content = self.generate_license_content("Local User", hardware_id, 365)
+            decrypted_data = self.fernet.decrypt(encrypted_data)
+            license_data = json.loads(decrypted_data.decode('utf-8'))
             
-            if license_content:
-                print("🎉 Default license created successfully for current machine!")
-                return license_content
-            else:
-                print("❌ Failed to create default license content")
-                return None
-                
-        except Exception as e:
-            print(f"❌ Failed to create default license: {e}")
-            return None
-
-    def validate_hardware_id(self, hardware_id):
-        """驗證硬體ID格式"""
-        try:
-            if not hardware_id or not isinstance(hardware_id, str):
+            # Check hardware ID
+            if license_data.get("hardware_id") != hardware_id:
+                print("Hardware ID mismatch!")
                 return False
-                
-            if len(hardware_id) < 16 or len(hardware_id) > 64:
-                return False
-                
-            hex_chars = set('0123456789abcdefABCDEF')
-            valid_chars = sum(1 for c in hardware_id if c in hex_chars)
             
-            if valid_chars / len(hardware_id) < 0.8:
+            # Check expiry date
+            expiry_date = datetime.fromisoformat(license_data.get("expiry_date"))
+            if datetime.now() > expiry_date:
+                print("License has expired!")
                 return False
                 
             return True
-        except Exception:
+        except Exception as e:
+            print(f"Error validating license file: {e}")
             return False
-
+# 測試函數
 # 測試函數
 def test_enhanced_system_detection():
     """測試增強的系統偵測功能"""
     print("Testing System Detection...")
+    print("="*50)
     
-    generator = LicenseGeneratorLogic()
-    
-    print("\n1. 測試 Windows 版本偵測...")
-    if platform.system() == "Windows":
-        windows_info = generator.get_windows_version_info()
-        print("Windows 版本資訊:")
-        for key, value in windows_info.items():
-            print(f"   {key}: {value}")
-    
-    print("\n2. 測試硬體資訊獲取...")
-    if platform.system() == "Windows":
-        hardware_info = generator.get_system_hardware_info()
-        print("硬體資訊:")
-        for key, value in hardware_info.items():
-            print(f"   {key}: {value}")
-    
-    print("\n3. 測試完整系統資訊...")
-    system_info = generator.get_system_info()
-    print("完整系統資訊:")
-    for key, value in system_info.items():
-        if value and value != "unknown":
-            print(f"   {key}: {value}")
-    
-    print("\n4. 測試硬體ID生成...")
-    hardware_id = generator.get_hardware_id()
-    if hardware_id:
-        print(f"Hardware ID: {hardware_id}")
-        print(f"格式驗證: {'✅ 有效' if generator.validate_hardware_id(hardware_id) else '❌ 無效'}")
+    try:
+        # 使用正確的類別名稱
+        hardware_info = HardwareInfo()
+        
+        print("\n1. 測試硬體ID生成...")
+        hardware_id = hardware_info.get_hardware_id()
+        if hardware_id:
+            print(f"Hardware ID: {hardware_id}")
+            print(f"格式驗證: {'有效' if hardware_info.validate_hardware_id_format(hardware_id) else '❌ 無效'}")
+            print(f"ID長度: {len(hardware_id)} 字符")
+        else:
+            print("無法生成硬體ID")
+        
+        print("\n2. 測試系統硬體資訊獲取...")
+        system_hardware_info = hardware_info.get_system_hardware_info()
+        if system_hardware_info:
+            print("系統硬體資訊:")
+            for key, value in system_hardware_info.items():
+                if value and value != "unknown" and value != "":
+                    # 清理格式化的數據
+                    if isinstance(value, str):
+                        # 移除多餘的空白和格式字符
+                        cleaned_value = value.replace('\n', ' ').replace('\r', '').strip()
+                        if cleaned_value:
+                            print(f"   {key}: {cleaned_value}")
+                    else:
+                        print(f"   {key}: {value}")
+        else:
+            print("無法獲取系統硬體資訊")
+        
+        print("\n3. 測試基本系統資訊...")
+        print("基本系統資訊:")
+        print(f"   平台: {platform.platform()}")
+        print(f"   系統: {platform.system()}")
+        print(f"   機器類型: {platform.machine()}")
+        print(f"   處理器: {platform.processor()}")
+        print(f"   Python版本: {platform.python_version()}")
+        
+        # 只有在設置了環境變數的情況下才測試 LicenseManager
+        print("\n4. 測試許可證管理器...")
+        license_key = os.environ.get('LICENSE_KEY')
+        if license_key:
+            try:
+                license_manager = LicenseManager()
+                print("LicenseManager 初始化成功")
+                
+                # 測試許可證生成
+                if hardware_id:
+                    print("\n5. 測試許可證生成...")
+                    license_content = license_manager.generate_license_content(
+                        "Test User", hardware_id, 30
+                    )
+                    if license_content:
+                        print("許可證生成成功")
+                        print(f"許可證大小: {len(license_content)} 字節")
+                        
+                        # 測試保存和驗證許可證
+                        test_license_file = "test_license.lic"
+                        try:
+                            with open(test_license_file, "wb") as f:
+                                f.write(license_content)
+                            print(f"許可證文件已保存: {test_license_file}")
+                            
+                            # 驗證許可證
+                            is_valid = license_manager.validate_license_file(hardware_id, test_license_file)
+                            print(f"許可證驗證: {'有效' if is_valid else '無效'}")
+                            
+                            # 清理測試文件
+                            os.remove(test_license_file)
+                            print("測試文件已清理")
+                            
+                        except Exception as e:
+                            print(f"許可證文件操作失敗: {e}")
+                    else:
+                        print("許可證生成失敗")
+                else:
+                    print("跳過許可證生成測試（無硬體ID）")
+                    
+            except Exception as e:
+                print(f"LicenseManager 初始化失敗: {e}")
+        else:
+            print("跳過 LicenseManager 測試（未設置 LICENSE_KEY 環境變數）")
+            print("要測試許可證功能，請設置環境變數:")
+            print("export LICENSE_KEY='YourSecretKey32CharsLongString'")
+        
+        print("\n" + "="*50)
+        print("系統偵測測試完成")
+        
+    except Exception as e:
+        print(f"測試過程中發生錯誤: {e}")
+        print(f"錯誤類型: {type(e).__name__}")
+        return False
     
     return True
 
-if __name__ == '__main__':
-    print("=== QCIAutomate License Generator ===")
+
+def test_hardware_id_consistency():
+    """測試硬體ID的一致性"""
+    print("\n" + "="*50)
+    print("測試硬體ID一致性...")
+    
+    try:
+        hardware_info = HardwareInfo()
+        
+        # 生成多次硬體ID，確保一致性
+        ids = []
+        for i in range(3):
+            hardware_id = hardware_info.get_hardware_id()
+            if hardware_id:
+                ids.append(hardware_id)
+                print(f"第 {i+1} 次生成: {hardware_id}")
+            else:
+                print(f"第 {i+1} 次生成失敗")
+        
+        if len(set(ids)) == 1 and len(ids) > 0:
+            print("硬體ID生成一致")
+        elif len(ids) > 0:
+            print("硬體ID生成不一致")
+        else:
+            print("無法生成硬體ID")
+            
+    except Exception as e:
+        print(f"一致性測試失敗: {e}")
+
+
+def main_test():
+    """主測試函數"""
+    print("=== QCIAutomate License Generator 測試 ===")
     print("="*50)
     
-    test_enhanced_system_detection()
+    # 執行主要測試
+    test_result = test_enhanced_system_detection()
+    
+    # 執行一致性測試
+    test_hardware_id_consistency()
+    
+    print("\n" + "="*50)
+    if test_result:
+        print("所有測試完成")
+    else:
+        print("測試過程中發現問題")
+    
+    return test_result
+
+
+if __name__ == '__main__':
+    main_test()
