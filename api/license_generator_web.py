@@ -46,7 +46,7 @@ class LicenseGeneratorLogic:
         except Exception as e:
             # 如果讀取或初始化金鑰失敗，就終止程式以保證安全
             print(f"Error initializing license generator: {e}")
-            sys.exit(1) # 終止程式
+            #sys.exit(1) # 終止程式
 
     def run_powershell_command(self, command, timeout=10):
         """
