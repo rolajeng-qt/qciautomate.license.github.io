@@ -30,10 +30,12 @@
       "src": "/api/status",
       "dest": "api/app.py",
       "methods": ["GET"]
-    },
+    }
+  ],
+  "rewrites": [
     {
-      "src": "/(.*)",
-      "dest": "index.html"
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ]
 }
