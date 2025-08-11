@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QCIAutomate License Generator - Quanta</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+        /* 使用系統字體，不依賴 Google Fonts */
 
         :root {
             --primary-color: #4A90E2;
@@ -18,14 +18,14 @@
             --success-bg: #EAF7EE;
             --success-border: #C8E6C9;
             --success-text: #1E824C;
-            --error-bg: #FDECEA;
-            --error-border: #EF9A9A;
-            --error-text: #C0392B;
+            --warning-bg: #FFF8E1;
+            --warning-border: #FFE082;
+            --warning-text: #F57F17;
             --shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
         }
 
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             background-color: var(--background-color);
             color: var(--text-color);
             margin: 0;
@@ -34,7 +34,7 @@
         }
 
         .container {
-            max-width: 900px;
+            max-width: 800px;
             margin: 0 auto;
             display: flex;
             flex-direction: column;
@@ -44,47 +44,6 @@
         .header {
             text-align: center;
             margin-bottom: 1rem;
-        }
-
-        .company-branding {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 1.5rem;
-            gap: 1rem;
-        }
-
-        .company-logo {
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            font-weight: 700;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
-        }
-
-        .company-info {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-        }
-
-        .company-name {
-            font-size: 1.4rem;
-            font-weight: 600;
-            color: var(--primary-dark);
-            line-height: 1.2;
-        }
-
-        .company-tagline {
-            font-size: 0.9rem;
-            color: #666;
-            font-weight: 400;
         }
 
         .header h1 {
@@ -120,145 +79,153 @@
             margin-bottom: 1.5rem;
             border-bottom: 2px solid var(--border-color);
             padding-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
-        .form-group {
-            margin-bottom: 1rem;
+        .icon {
+            font-size: 1.8rem;
         }
 
-        .form-label {
-            display: block;
-            margin-bottom: 0.5rem;
+        .notice {
+            background-color: var(--warning-bg);
+            border: 2px solid var(--warning-border);
+            color: var(--warning-text);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            text-align: center;
             font-weight: 500;
+            font-size: 1.1rem;
         }
 
-        .form-input {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            border: 1px solid var(--border-color);
+        .step-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .step-item {
+            background: var(--background-color);
+            margin-bottom: 1rem;
+            padding: 1.5rem;
             border-radius: 8px;
-            box-sizing: border-box;
-            font-size: 16px;
-            transition: border-color 0.3s, box-shadow 0.3s;
+            border-left: 4px solid var(--primary-color);
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
         }
 
-        .form-input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
+        .step-number {
+            background: var(--primary-color);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary-dark);
+        }
+
+        .step-description {
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .download-section {
+            background: var(--success-bg);
+            border: 2px solid var(--success-border);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .download-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--success-text);
+            margin-bottom: 1rem;
         }
 
         .btn {
             background: var(--primary-color);
             color: white;
-            padding: 0.75rem 1.5rem;
+            padding: 1rem 2rem;
             border: none;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 1rem;
-            font-weight: 500;
+            font-size: 1.1rem;
+            font-weight: 600;
             transition: background-color 0.3s ease, transform 0.1s ease;
-            width: 100%;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            text-decoration: none;
+            display: inline-block;
+            margin: 0.5rem;
         }
 
         .btn:hover {
             background-color: var(--primary-dark);
-            transform: translateY(-1px);
+            transform: translateY(-2px);
         }
-        
+
         .btn-secondary {
             background: var(--secondary-color);
             color: var(--text-color);
         }
-        
+
         .btn-secondary:hover {
             background-color: #43C6B1;
         }
 
-        .btn:disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-
-        .result {
-            margin-top: 1.5rem;
-            padding: 1rem;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            line-height: 1.8;
-            opacity: 0;
-            animation: fadeIn 0.5s forwards;
-            display: none;
-        }
-        
-        .result.show {
-            display: block;
-        }
-
-        .result.success {
-            background-color: var(--success-bg);
-            border: 1px solid var(--success-border);
-            color: var(--success-text);
-        }
-
-        .result.error {
-            background-color: var(--error-bg);
-            border: 1px solid var(--error-border);
-            color: var(--error-text);
-        }
-
-        .loading-container {
-            display: flex;
-            align-items: center;
-        }
-
-        .loading-text {
-            margin-left: 0.5rem;
-        }
-
-        .spinner {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid var(--primary-color);
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            animation: spin 1s linear infinite;
-        }
-
-        .info-grid {
+        .features {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-top: 1rem;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
         }
 
-        .info-item {
-            background: var(--background-color);
-            padding: 0.75rem;
+        .feature-card {
+            background: var(--card-background);
+            padding: 1.5rem;
             border-radius: 8px;
-            border-left: 3px solid var(--primary-color);
+            border: 1px solid var(--border-color);
+            text-align: center;
         }
 
-        .info-label {
-            font-size: 0.8rem;
-            color: #666;
-            margin-bottom: 0.25rem;
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
         }
 
-        .info-value {
+        .feature-title {
             font-weight: 600;
-            color: var(--text-color);
-            word-break: break-all;
+            color: var(--primary-dark);
+            margin-bottom: 0.5rem;
         }
-        
+
+        .feature-description {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
         .footer {
             text-align: center;
-            margin-top: 2rem;
-            padding-top: 1.5rem;
+            margin-top: 3rem;
+            padding-top: 2rem;
             border-top: 1px solid var(--border-color);
             color: #666;
         }
@@ -268,7 +235,7 @@
             align-items: center;
             justify-content: center;
             gap: 1rem;
-            margin-bottom: 0.5rem;
+            margin-bottom: 1rem;
         }
 
         .footer-logo {
@@ -288,84 +255,177 @@
         .footer-company {
             text-align: left;
         }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+
+        .code-block {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: #495057;
+            margin: 0.5rem 0;
+            word-break: break-all;
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .container {
+                padding: 1rem;
+                gap: 1rem;
+            }
+            
+            .section {
+                padding: 1.5rem;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <!-- <div class="company-branding">
-                <div class="company-logo">Q</div>
-                <div class="company-info">
-                    <span class="company-name">Quanta</span>
-                    <span class="company-tagline">Innovation & Excellence</span>
-                </div>
-            </div> -->
-            <h1>QCIAutomate License Generator</h1>
-            <p>Professional software license management system</p>
+            <h1>🛠️ QCIAutomate License Generator</h1>
+            <p>專業軟體許可證管理系統</p>
+        </div>
+
+        <div class="notice">
+            ⚠️ 此為 API 服務端點，請使用本地端憑證應用程式來生成許可證文件
         </div>
 
         <div class="section">
             <div class="section-title">
-                Get Local Hardware ID
+                <span class="icon">📋</span>
+                使用說明
             </div>
             <p style="margin-bottom: 1.5rem; color: #666;">
-                Click the button to get the current machine's hardware ID and automatically fill it into the form below.
+                本系統提供 API 服務用於生成軟體許可證。請按照以下步驟使用本地端應用程式：
             </p>
-            <button class="btn" id="get-hardware-btn" onclick="getLocalHardwareId()">
-                <span id="hardware-btn-text">Get Local Hardware ID</span>
-            </button>
-            <div id="hardware-result" class="result"></div>
+            
+            <ol class="step-list">
+                <li class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <div class="step-title">下載本地端應用程式</div>
+                        <div class="step-description">
+                            下載 <code>LicenseActivator.exe</code> 到您的電腦
+                        </div>
+                    </div>
+                </li>
+                
+                <li class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <div class="step-title">執行應用程式</div>
+                        <div class="step-description">
+                            雙擊執行 <code>LicenseActivator.exe</code>，程式會自動：<br>
+                            • 獲取您電腦的硬體ID<br>
+                            • 向服務器請求生成許可證<br>
+                            • 下載並保存許可證文件
+                        </div>
+                    </div>
+                </li>
+                
+                <li class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <div class="step-title">獲取許可證文件</div>
+                        <div class="step-description">
+                            成功執行後，將在程式目錄下生成 <code>license.lic</code> 許可證文件
+                        </div>
+                    </div>
+                </li>
+            </ol>
         </div>
 
         <div class="section">
             <div class="section-title">
-                Generate License File
+                <span class="icon">⚡</span>
+                系統特色
             </div>
-            <form id="license-form">
-                <div class="form-group">
-                    <label class="form-label" for="customer_name">Customer Name:</label>
-                    <input type="text" class="form-input" id="customer_name" value="Local User" required>
+            
+            <div class="features">
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <div class="feature-title">硬體綁定</div>
+                    <div class="feature-description">
+                        基於機器硬體特徵生成唯一ID，確保許可證與特定設備綁定
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label class="form-label" for="company_name">Company/Organization:</label>
-                    <input type="text" class="form-input" id="company_name" placeholder="Enter company or organization name" required>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🛡️</div>
+                    <div class="feature-title">安全加密</div>
+                    <div class="feature-description">
+                        使用強加密演算法保護許可證內容，防止篡改和偽造
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label class="form-label" for="hardware_id">Hardware ID:</label>
-                    <input type="text" class="form-input" id="hardware_id" placeholder="Click button above or enter manually" required>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">⏰</div>
+                    <div class="feature-title">期限控制</div>
+                    <div class="feature-description">
+                        支援自定義許可證有效期，靈活控制軟體使用時間
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label class="form-label" for="expiry_days">License Duration (Days):</label>
-                    <input type="number" class="form-input" id="expiry_days" value="365" min="1" max="3650" required>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🚀</div>
+                    <div class="feature-title">一鍵生成</div>
+                    <div class="feature-description">
+                        簡單易用的本地端應用程式，一鍵生成所需許可證文件
+                    </div>
                 </div>
-                <button type="submit" class="btn" id="generate-license-btn">
-                    <span id="license-btn-text">Generate license.lic File</span>
-                </button>
-            </form>
-            <div id="license-result" class="result"></div>
+            </div>
         </div>
 
         <div class="section">
             <div class="section-title">
-                Quick Generate Local License
+                <span class="icon">🔧</span>
+                API 端點資訊
             </div>
-            <p style="margin-bottom: 1.5rem; color: #666;">
-                One-click generation of a 365-day valid license file for the current machine.
+            <p>本服務提供以下 API 端點供開發使用：</p>
+            
+            <div style="margin: 1rem 0;">
+                <strong>POST</strong> <code>/api/generate-for-app</code><br>
+                <small>為應用程式生成許可證文件</small>
+            </div>
+            
+            <div style="margin: 1rem 0;">
+                <strong>GET</strong> <code>/api/get-hardware-id</code><br>
+                <small>獲取本機硬體ID資訊</small>
+            </div>
+            
+            <div style="margin: 1rem 0;">
+                <strong>GET</strong> <code>/api/status</code><br>
+                <small>檢查系統狀態</small>
+            </div>
+        </div>
+
+        <div class="download-section">
+            <div class="download-title">🎯 立即使用</div>
+            <p style="margin-bottom: 1.5rem;">
+                下載本地端應用程式，快速生成您的軟體許可證
             </p>
-            <button class="btn btn-secondary" id="create-default-btn" onclick="createDefaultLicense()">
-                <span id="default-btn-text">Create Default Local License File</span>
-            </button>
-            <div id="default-result" class="result"></div>
+            <a href="https://drive.google.com/file/d/1Nh_XIi4Wxr0AAqSgVBbnWhrP6RZz0orh/view?usp=drive_link" 
+               class="btn" 
+               download="LicenseActivator.exe"
+               target="_blank">
+                📥 下載 LicenseActivator.exe
+            </a>
+            <br>
+            <a href="https://github.com/rolajeng-qt/qciautomate.license.github.io" 
+               class="btn btn-secondary" 
+               target="_blank" 
+               style="margin-top: 0.5rem;">
+                📋 查看所有版本
+            </a>
+            <br>
+            <small style="color: #666; margin-top: 1rem; display: block;">
+                建議：將應用程式保存到桌面或常用資料夾以便後續使用
+            </small>
         </div>
 
         <div class="footer">
@@ -373,7 +433,7 @@
                 <div class="footer-logo">Q</div>
                 <div class="footer-company">
                     <p><strong>Quanta</strong> - QCIAutomate License System</p>
-                    <p style="margin-top: 5px; font-size: 0.9rem;">Secure and reliable software license management solution</p>
+                    <p style="margin-top: 5px; font-size: 0.9rem;">安全可靠的軟體許可證管理解決方案</p>
                     <p style="margin-top: 8px; font-size: 0.8rem; color: #999;">© 2025 Quanta. All rights reserved.</p>
                 </div>
             </div>
@@ -381,169 +441,39 @@
     </div>
 
     <script>
-        function showResult(divId, message, isSuccess) {
-            const resultDiv = document.getElementById(divId);
-            resultDiv.innerHTML = message;
-            resultDiv.className = `result show ${isSuccess ? 'success' : 'error'}`;
-        }
-        
-        function showLoading(btnId) {
-            const btn = document.getElementById(btnId);
-            const originalText = btn.dataset.originalText;
-            if (!originalText) {
-                btn.dataset.originalText = btn.innerHTML;
-            }
-            btn.innerHTML = '<span class="spinner"></span> <span class="loading-text">Processing...</span>';
-            btn.disabled = true;
-        }
-
-        function hideLoading(btnId) {
-            const btn = document.getElementById(btnId);
-            btn.innerHTML = btn.dataset.originalText;
-            btn.disabled = false;
-        }
-
-        async function getLocalHardwareId() {
-            const resultDivId = 'hardware-result';
-            const btnId = 'get-hardware-btn';
-            showLoading(btnId);
-            
-            try {
-                const response = await fetch('/api/get-hardware-id');
-                const data = await response.json();
-                
-                if (response.ok) {
-                    let infoHtml = `
-                        <div style="margin-bottom: 1rem; font-weight: 600;">Hardware ID retrieved successfully!</div>
-                        <div class="info-grid">
-                            <div class="info-item">
-                                <div class="info-label">Hardware ID</div>
-                                <div class="info-value">${data.hardware_id}</div>
-                            </div>
-                            <div class="info-item">
-                                <div class="info-label">Operating System</div>
-                                <div class="info-value">${data.system_info || 'N/A'}</div>
-                            </div>
-                            <div class="info-item">
-                                <div class="info-label">Processor</div>
-                                <div class="info-value">${data.processor || 'N/A'}</div>
-                            </div>
-                            <div class="info-item">
-                                <div class="info-label">Model</div>
-                                <div class="info-value">${data.model || 'N/A'}</div>
-                            </div>
-                    `;
-                    
-                    if (data.cpu_name) {
-                        infoHtml += `
-                            <div class="info-item">
-                                <div class="info-label">CPU Model</div>
-                                <div class="info-value">${data.cpu_name}</div>
-                            </div>
-                        `;
-                    }
-                    
-                    if (data.total_memory) {
-                        infoHtml += `
-                            <div class="info-item">
-                                <div class="info-label">Memory Capacity</div>
-                                <div class="info-value">${data.total_memory}</div>
-                            </div>
-                        `;
-                    }
-                    
-                    infoHtml += '</div>';
-                    showResult(resultDivId, infoHtml, true);
-                    document.getElementById('hardware_id').value = data.hardware_id;
-                } else {
-                    throw new Error(data.error);
-                }
-            } catch (error) {
-                showResult(resultDivId, `Failed to get hardware ID: ${error.message}`, false);
-            } finally {
-                hideLoading(btnId);
-            }
-        }
-
-        document.getElementById('license-form').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const resultDivId = 'license-result';
-            const btnId = 'generate-license-btn';
-            showLoading(btnId);
-
-            const customer_name = document.getElementById('customer_name').value;
-            const company_name = document.getElementById('company_name').value;
-            const hardware_id = document.getElementById('hardware_id').value;
-            const expiry_days = document.getElementById('expiry_days').value;
-            
-            const formData = new FormData();
-            formData.append('customer_name', customer_name);
-            formData.append('company_name', company_name);
-            formData.append('hardware_id', hardware_id);
-            formData.append('expiry_days', expiry_days);
-            
-            try {
-                const response = await fetch('/generate', {
-                    method: 'POST',
-                    body: formData
+        // 簡單的頁面互動效果
+        document.addEventListener('DOMContentLoaded', function() {
+            // 為所有卡片添加點擊效果
+            const cards = document.querySelectorAll('.section, .feature-card');
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-3px)';
                 });
-
-                if (response.ok) {
-                    const blob = await response.blob();
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = 'license.lic';
-                    a.click();
-                    window.URL.revokeObjectURL(url);
-
-                    showResult(resultDivId, `
-                        <div style="font-weight: 600;">License file generated successfully!</div>
-                        <div>The file has been automatically downloaded to your computer.</div>
-                    `, true);
-                } else {
-                    const errorData = await response.json();
-                    throw new Error(errorData.error);
-                }
-            } catch (error) {
-                showResult(resultDivId, `License generation failed: ${error.message}`, false);
-            } finally {
-                hideLoading(btnId);
-            }
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+            
+            // 添加頁面載入動畫
+            const sections = document.querySelectorAll('.section');
+            sections.forEach((section, index) => {
+                section.style.opacity = '0';
+                section.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    section.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    section.style.opacity = '1';
+                    section.style.transform = 'translateY(0)';
+                }, index * 200);
+            });
         });
 
-        async function createDefaultLicense() {
-            const resultDivId = 'default-result';
-            const btnId = 'create-default-btn';
-            showLoading(btnId);
-
-            try {
-                const response = await fetch('/api/create-default-license', {
-                    method: 'POST'
-                });
-
-                if (response.ok) {
-                    const blob = await response.blob();
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = 'license.lic';
-                    a.click();
-                    window.URL.revokeObjectURL(url);
-
-                    showResult(resultDivId, `
-                        <div style="font-weight: 600;">Default local license file created successfully!</div>
-                        <div>A 365-day valid license file has been downloaded.</div>
-                    `, true);
-                } else {
-                    const errorData = await response.json();
-                    throw new Error(errorData.error);
-                }
-            } catch (error) {
-                showResult(resultDivId, `Failed to create local license: ${error.message}`, false);
-            } finally {
-                hideLoading(btnId);
-            }
+        // 複製 API 端點到剪貼簿
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert('已複製到剪貼簿: ' + text);
+            });
         }
     </script>
 </body>
