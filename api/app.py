@@ -1,9 +1,61 @@
 from flask import Flask, request, send_file, jsonify, render_template_string
-from license_generator_web import HardwareInfo, LicenseManager
 import os
+import sys
 import io
 import json
 import platform
+
+# 確保可以導入同目錄下的模組
+current_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, current_dir)
+
+try:
+    from license_generator_web import HardwareInfo, LicenseManager
+    print("Successfully imported license_generator_web")
+except ImportError as e:
+    print(f"Import error: {e}")
+    
+    # 創建最小替代實現
+    import hashlib
+    import uuid
+    from datetime import datetime, timedelta
+    from cryptography.fernet import Fernet
+    import base64
+    
+    class HardwareInfo:
+        def get_hardware_id(self):
+            return hashlib.md5(str(uuid.getnode()).encode()).hexdigest()
+        
+        def get_system_hardware_info(self):
+            return {
+                "system_info": platform.platform(),
+                "machine": platform.machine(),
+                "processor": platform.processor()
+            }
+    
+    class LicenseManager:
+        def __init__(self):
+            # 使用環境變數或默認密鑰
+            key_from_env = os.environ.get('LICENSE_KEY', 'QCIAutomate2024DefaultSecretKey12')
+            key_bytes = key_from_env.encode('utf-8')[:32].ljust(32, b'0')
+            self.fernet = Fernet(base64.urlsafe_b64encode(key_bytes))
+            
+        def get_hardware_id(self):
+            return HardwareInfo().get_hardware_id()
+            
+        def get_system_info(self):
+            return HardwareInfo().get_system_hardware_info()
+            
+        def generate_license_content(self, customer_name, hardware_id, expiry_days):
+            expiry_date = datetime.now() + timedelta(days=expiry_days)
+            license_data = {
+                "customer_name": customer_name,
+                "hardware_id": hardware_id,
+                "expiry_date": expiry_date.isoformat(),
+                "created_at": datetime.now().isoformat()
+            }
+            json_data = json.dumps(license_data, indent=4).encode('utf-8')
+            return self.fernet.encrypt(json_data)
 
 app = Flask(__name__)
 license_logic = LicenseManager()
