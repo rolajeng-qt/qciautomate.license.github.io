@@ -1,10 +1,6 @@
 import requests
 import json
 import os
-import sys
-
-from license_generator_web import HardwareInfo
-
 
 from license_generator_web import HardwareInfo, LicenseManager
 
