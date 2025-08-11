@@ -1,17 +1,41 @@
 {
-  "functions": {
-    "api/app.py": {
-      "runtime": "python3.9"
+  "builds": [
+    {
+      "src": "api/app.py",
+      "use": "@vercel/python"
     }
-  },
+  ],
   "routes": [
     {
-      "src": "/api/(.*)",
-      "dest": "/api/app.py"
+      "src": "/api/generate-for-app",
+      "dest": "api/app.py",
+      "methods": ["POST"]
     },
     {
-      "src": "/(.*)",
-      "dest": "/index.html"
+      "src": "/api/get-hardware-id",
+      "dest": "api/app.py",
+      "methods": ["GET"]
+    },
+    {
+      "src": "/api/create-default-license",
+      "dest": "api/app.py",
+      "methods": ["POST"]
+    },
+    {
+      "src": "/api/validate-license",
+      "dest": "api/app.py",
+      "methods": ["POST"]
+    },
+    {
+      "src": "/api/status",
+      "dest": "api/app.py",
+      "methods": ["GET"]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ]
 }
