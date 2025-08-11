@@ -1,7 +1,11 @@
-# PyInstaller generated files
-dist/
-build/
-__pycache__/
-*.spec
+# 忽略 PyInstaller 產生的檔案與資料夾
+api/dist/
+api/build/
+api/*.spec
 
+# 忽略 Python 產生的快取檔案
+__pycache__/
+api/__pycache__/
+
+# 忽略本地產生的授權檔案
 *.lic
