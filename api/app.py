@@ -9,7 +9,7 @@ import uuid
 from datetime import datetime, timedelta
 
 from cryptography.fernet import Fernet
-from flask import Flask, jsonify, render_template_string, request, send_file
+from flask import Flask, jsonify, request, send_file, send_from_directory
 
 # 確保可以導入同目錄下的模組
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -287,21 +287,39 @@ def after_request(response):
     response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
     return response
 
-# if __name__ == '__main__':
-#     print("QCIAutomate 许可证服务器启动中...")
-#     print("服务器地址:")
-#     print("   本地访问:  http://127.0.0.1:5000")
-#     print("   网络访问: http://0.0.0.0:5000")
-#     print("\n可用的API端点:")
-#     print("   GET  /                        - 网页界面")
-#     print("   GET  /api/get-hardware-id     - 获取本机硬件ID")
-#     print("   POST /generate                - 生成许可证文件")
-#     print("   POST /api/create-default-license - 创建默认许可证")
-#     print("   POST /api/validate-license    - 验证许可证文件")
-#     print("   GET  /api/status              - 系统状态")
-#     print("="*50)
-    
-#     # 在本地的 5000 端口启动服务器
-#     # host='0.0.0.0' 允许从外部网络访问
-#     # threaded=True 让服务器可以同时处理多个请求
-#     app.run(host='0.0.0.0', port=5000, debug=True, threaded=True)
+# 添加根路由來處理主頁
+@app.route('/')
+def index():
+    """服務主頁 HTML 文件"""
+    try:
+        # 嘗試從根目錄讀取 index.html
+        root_path = os.path.join(os.path.dirname(current_dir))
+        index_path = os.path.join(root_path, 'index.html')
+        
+        if os.path.exists(index_path):
+            return send_from_directory(root_path, 'index.html')
+        else:
+            # 如果找不到文件，返回一個簡單的響應
+            return """
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>QCIAutomate License Generator</title>
+            </head>
+            <body>
+                <h1>QCIAutomate License Generator</h1>
+                <p>API 服務正在運行</p>
+                <p>可用端點:</p>
+                <ul>
+                    <li>GET /api/status - 系統狀態</li>
+                    <li>GET /api/get-hardware-id - 獲取硬件ID</li>
+                    <li>POST /api/generate-for-app - 生成許可證</li>
+                </ul>
+            </body>
+            </html>
+            """
+    except Exception as e:
+        return f"Error serving index: {str(e)}", 500
+
+if __name__ == '__main__':
+    app.run(debug=True)
